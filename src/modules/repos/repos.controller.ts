@@ -37,7 +37,13 @@ export async function registerReposRoutes(app: FastifyInstance): Promise<void> {
       });
     }
 
-    const result = await reposService.listRepos(parsed.data);
+    const result = await reposService.listRepos({
+      page: parsed.data.page,
+      pageSize: parsed.data.pageSize,
+      search: parsed.data.search,
+      listMode: parsed.data.listMode,
+      monitored: parsed.data.monitored,
+    });
     return {
       success: true,
       data: { items: result.items },

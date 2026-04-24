@@ -6,9 +6,9 @@ import type { RepoListMode } from './repos.types';
 type ListReposInput = {
   page: number;
   pageSize: number;
-  search?: string;
-  listMode?: RepoListMode;
-  monitored?: boolean;
+  search: string | undefined;
+  listMode: RepoListMode | undefined;
+  monitored: boolean | undefined;
 };
 
 export class ReposService {
