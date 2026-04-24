@@ -9,7 +9,7 @@ export async function registerFeedsRoutes(app: FastifyInstance): Promise<void> {
 
   app.get('/feeds/:token/rss.xml', async (request, reply) => {
     const { token } = request.params as { token: string };
-    const xml = await feedsService.renderFeed(token, app.env.BASE_URL, app.env.RSS_FEED_LIMIT);
+    const xml = await feedsService.renderFeed(token, app.env.BASE_URL, app.env.RSS_FEED_LIMIT, undefined);
     reply.type('application/rss+xml; charset=utf-8');
     return xml;
   });

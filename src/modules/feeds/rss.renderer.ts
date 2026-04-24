@@ -14,7 +14,7 @@ export class RssRenderer {
     description: string;
     link: string;
     events: RepoEventWithRepo[];
-    eventType?: RepoEventType;
+    eventType: RepoEventType | undefined;
   }): string {
     const latestDate = params.events[0]?.detectedAt ?? new Date();
 
