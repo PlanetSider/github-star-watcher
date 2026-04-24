@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum RepoListMode {
+  none
+  blacklist
+  whitelist
+}
+
+enum RepoEventType {
+  code_updated
+  release_published
+}
+
+model StarredRepo {
+  id            Int          @id @default(autoincrement())
+  repoId        String       @unique
+  owner         String
+  name          String
+  fullName      String       @unique
+  htmlUrl       String
+  defaultBranch String?
+  isArchived    Boolean      @default(false)
+  isDisabled    Boolean      @default(false)
+  starredAt     DateTime?
+  listMode      RepoListMode @default(none)
+  listReason    String?
+  listedAt      DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  snapshot RepoSnapshot?
+  events   RepoEvent[]
+
+  @@index([listMode])
+  @@index([owner])
+  @@index([name])
+  @@index([fullName])
+}
+
+model RepoSnapshot {
+  id                       Int      @id @default(autoincrement())
+  repoId                   String   @unique
+  pushedAt                 DateTime?
+  latestReleaseId          String?
+  latestReleaseTag         String?
+  latestReleasePublishedAt DateTime?
+  lastCheckedAt            DateTime?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  repo StarredRepo @relation(fields: [repoId], references: [repoId], onDelete: Cascade)
+
+  @@index([lastCheckedAt])
+}
+
+model RepoEvent {
+  id                   Int           @id @default(autoincrement())
+  repoId               String
+  eventType            RepoEventType
+  fingerprint          String        @unique
+  title                String
+  link                 String?
+  payloadJson          String?
+  detectedAt           DateTime      @default(now())
+  serverchanNotifiedAt DateTime?
+  createdAt            DateTime      @default(now())
+
+  repo StarredRepo @relation(fields: [repoId], references: [repoId], onDelete: Cascade)
+
+  @@index([repoId, detectedAt])
+  @@index([eventType, detectedAt])
+  @@index([serverchanNotifiedAt])
+}
+
+model AppSetting {
+  key       String   @id
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
