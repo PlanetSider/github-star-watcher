@@ -7,18 +7,26 @@ type CurrentState = {
   latestReleasePublishedAt: Date | null;
 };
 
+type DiffEvent = {
+  eventType: 'code_updated' | 'release_published';
+  fingerprint: string;
+  title: string;
+  link: string | null;
+  payloadJson: string | null;
+};
+
 export class DiffService {
-  diff(snapshot: RepoSnapshot | null, current: CurrentState, repo: { fullName: string; htmlUrl: string }, releaseUrl: string | null) {
+  diff(
+    snapshot: RepoSnapshot | null,
+    current: CurrentState,
+    repo: { fullName: string; htmlUrl: string },
+    releaseUrl: string | null,
+  ): DiffEvent[] {
     if (!snapshot || !snapshot.lastCheckedAt) {
       return [];
     }
 
-    const events: Array<{
-      eventType: 'code_updated' | 'release_published';
-      title: string;
-      link: string | null;
-      payloadJson: string | null;
-    }> = [];
+    const events: DiffEvent[] = [];
 
     const snapshotPushedAt = snapshot.pushedAt?.toISOString() ?? null;
     const currentPushedAt = current.pushedAt?.toISOString() ?? null;

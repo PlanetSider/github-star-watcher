@@ -3,6 +3,7 @@ import { AppError } from '../../lib/errors';
 import type { GithubLatestRelease, GithubRepoState, GithubStarredRepo } from './github.types';
 
 type StatusError = Error & { status?: number };
+type StarredResponseItem = Awaited<ReturnType<Octokit['paginate']>>[number];
 
 export class GithubClient {
   private readonly octokit: Octokit;
@@ -22,7 +23,7 @@ export class GithubClient {
         },
       });
 
-      return items.map((item) => ({
+      return items.map((item: StarredResponseItem) => ({
         repoId: String(item.repo.id),
         owner: item.repo.owner.login,
         name: item.repo.name,
