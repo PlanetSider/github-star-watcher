@@ -25,7 +25,12 @@ export async function registerEventsRoutes(app: FastifyInstance): Promise<void> 
       });
     }
 
-    const result = await eventsService.listEvents(parsed.data);
+    const result = await eventsService.listEvents({
+      page: parsed.data.page,
+      pageSize: parsed.data.pageSize,
+      eventType: parsed.data.eventType,
+      repoId: parsed.data.repoId,
+    });
     return {
       success: true,
       data: { items: result.items },

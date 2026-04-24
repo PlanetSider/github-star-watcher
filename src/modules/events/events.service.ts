@@ -34,8 +34,8 @@ export class EventsService {
   async listEvents(input: {
     page: number;
     pageSize: number;
-    eventType?: RepoEventType;
-    repoId?: string;
+    eventType: RepoEventType | undefined;
+    repoId: string | undefined;
   }) {
     const where = {
       ...(input.eventType ? { eventType: input.eventType } : {}),
@@ -69,9 +69,11 @@ export class EventsService {
     };
   }
 
-  async getRecentEvents(limit: number, eventType?: RepoEventType) {
+  async getRecentEvents(limit: number, eventType: RepoEventType | undefined) {
+    const where = eventType ? { eventType } : {};
+
     return this.prisma.repoEvent.findMany({
-      where: eventType ? { eventType } : undefined,
+      where,
       include: { repo: true },
       orderBy: { detectedAt: 'desc' },
       take: limit,

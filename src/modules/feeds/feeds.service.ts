@@ -2,6 +2,13 @@ import type { PrismaClient, RepoEventType } from '@prisma/client';
 import { SettingsService } from '../settings/settings.service';
 import { RssRenderer } from './rss.renderer';
 
+type FeedEvent = Awaited<ReturnType<PrismaClient['repoEvent']['findMany']>>[number] & {
+  repo: {
+    fullName: string;
+    htmlUrl: string;
+  };
+};
+
 export class FeedsService {
   constructor(
     private readonly prisma: PrismaClient,
@@ -9,11 +16,18 @@ export class FeedsService {
     private readonly rssRenderer: RssRenderer,
   ) {}
 
-  async renderFeed(token: string, baseUrl: string, limit: number, eventType?: RepoEventType): Promise<string> {
+  async renderFeed(
+    token: string,
+    baseUrl: string,
+    limit: number,
+    eventType: RepoEventType | undefined,
+  ): Promise<string> {
     await this.settingsService.assertValidFeedToken(token);
 
-    const events = await this.prisma.repoEvent.findMany({
-      where: eventType ? { eventType } : undefined,
+    const where = eventType ? { eventType } : {};
+
+    const events: FeedEvent[] = await this.prisma.repoEvent.findMany({
+      where,
       include: {
         repo: {
           select: {
