@@ -1,0 +1,23 @@
+services:
+  github-star-watcher:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-your-username}/github-star-watcher:latest
+    container_name: github-star-watcher
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      APP_PORT: 3000
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      BASE_URL: ${BASE_URL:-http://localhost:3000}
+      API_AUTH_TOKEN: ${API_AUTH_TOKEN}
+      CORS_ORIGIN: ${CORS_ORIGIN:-}
+      DATABASE_URL: file:./data/app.db
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      POLL_CRON: ${POLL_CRON:-*/30 * * * *}
+      SERVERCHAN_SENDKEY: ${SERVERCHAN_SENDKEY:-}
+      RSS_ENABLED: ${RSS_ENABLED:-true}
+      RSS_FEED_TOKEN: ${RSS_FEED_TOKEN}
+      RSS_FEED_LIMIT: ${RSS_FEED_LIMIT:-50}
+    volumes:
+      - ./data:/app/data
